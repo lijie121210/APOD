@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,13 @@
 		C8A898F722DAB4C2000AA02D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C8A898F522DAB4C2000AA02D /* LaunchScreen.storyboard */; };
 		C8A8990222DAB4C2000AA02D /* APODTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A8990122DAB4C2000AA02D /* APODTests.swift */; };
 		C8A8990D22DAB4C2000AA02D /* APODUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A8990C22DAB4C2000AA02D /* APODUITests.swift */; };
+		C8C9279622DAB70B004C976A /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = C8C9279522DAB70B004C976A /* RxSwift */; };
+		C8C9279822DAB70B004C976A /* RxTest in Frameworks */ = {isa = PBXBuildFile; productRef = C8C9279722DAB70B004C976A /* RxTest */; };
+		C8C9279A22DAB70B004C976A /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = C8C9279922DAB70B004C976A /* RxRelay */; };
+		C8C9279C22DAB70B004C976A /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = C8C9279B22DAB70B004C976A /* RxCocoa */; };
+		C8C9279E22DAB70B004C976A /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = C8C9279D22DAB70B004C976A /* RxBlocking */; };
+		C8C927A022DAB7AC004C976A /* APODResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C9279F22DAB7AC004C976A /* APODResult.swift */; };
+		C8C927A222DB1D94004C976A /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C927A122DB1D94004C976A /* DatePickerViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +58,8 @@
 		C8A8990822DAB4C2000AA02D /* APODUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = APODUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8A8990C22DAB4C2000AA02D /* APODUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APODUITests.swift; sourceTree = "<group>"; };
 		C8A8990E22DAB4C2000AA02D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C8C9279F22DAB7AC004C976A /* APODResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APODResult.swift; sourceTree = "<group>"; };
+		C8C927A122DB1D94004C976A /* DatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +67,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8C9279C22DAB70B004C976A /* RxCocoa in Frameworks */,
+				C8C9279E22DAB70B004C976A /* RxBlocking in Frameworks */,
+				C8C9279A22DAB70B004C976A /* RxRelay in Frameworks */,
+				C8C9279622DAB70B004C976A /* RxSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8C9279822DAB70B004C976A /* RxTest in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,6 +118,8 @@
 				C8A898E722DAB4BE000AA02D /* AppDelegate.swift */,
 				C8A898E922DAB4BE000AA02D /* SceneDelegate.swift */,
 				C8A898EB22DAB4BE000AA02D /* ViewController.swift */,
+				C8C927A122DB1D94004C976A /* DatePickerViewController.swift */,
+				C8C9279F22DAB7AC004C976A /* APODResult.swift */,
 				C8A898ED22DAB4BE000AA02D /* Main.storyboard */,
 				C8A898F322DAB4C2000AA02D /* Assets.xcassets */,
 				C8A898F522DAB4C2000AA02D /* LaunchScreen.storyboard */,
@@ -147,6 +163,12 @@
 			dependencies = (
 			);
 			name = APOD;
+			packageProductDependencies = (
+				C8C9279522DAB70B004C976A /* RxSwift */,
+				C8C9279922DAB70B004C976A /* RxRelay */,
+				C8C9279B22DAB70B004C976A /* RxCocoa */,
+				C8C9279D22DAB70B004C976A /* RxBlocking */,
+			);
 			productName = APOD;
 			productReference = C8A898E422DAB4BE000AA02D /* APOD.app */;
 			productType = "com.apple.product-type.application";
@@ -165,6 +187,9 @@
 				C8A898FF22DAB4C2000AA02D /* PBXTargetDependency */,
 			);
 			name = APODTests;
+			packageProductDependencies = (
+				C8C9279722DAB70B004C976A /* RxTest */,
+			);
 			productName = APODTests;
 			productReference = C8A898FD22DAB4C2000AA02D /* APODTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -219,6 +244,9 @@
 				Base,
 			);
 			mainGroup = C8A898DB22DAB4BE000AA02D;
+			packageReferences = (
+				C8C9279422DAB70B004C976A /* XCRemoteSwiftPackageReference "RxSwift" */,
+			);
 			productRefGroup = C8A898E522DAB4BE000AA02D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -264,6 +292,8 @@
 			files = (
 				C8A898EC22DAB4BE000AA02D /* ViewController.swift in Sources */,
 				C8A898F222DAB4BE000AA02D /* APOD.xcdatamodeld in Sources */,
+				C8C927A222DB1D94004C976A /* DatePickerViewController.swift in Sources */,
+				C8C927A022DAB7AC004C976A /* APODResult.swift in Sources */,
 				C8A898E822DAB4BE000AA02D /* AppDelegate.swift in Sources */,
 				C8A898EA22DAB4BE000AA02D /* SceneDelegate.swift in Sources */,
 			);
@@ -592,6 +622,45 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C8C9279422DAB70B004C976A /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C8C9279522DAB70B004C976A /* RxSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C8C9279422DAB70B004C976A /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxSwift;
+		};
+		C8C9279722DAB70B004C976A /* RxTest */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C8C9279422DAB70B004C976A /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxTest;
+		};
+		C8C9279922DAB70B004C976A /* RxRelay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C8C9279422DAB70B004C976A /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxRelay;
+		};
+		C8C9279B22DAB70B004C976A /* RxCocoa */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C8C9279422DAB70B004C976A /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxCocoa;
+		};
+		C8C9279D22DAB70B004C976A /* RxBlocking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C8C9279422DAB70B004C976A /* XCRemoteSwiftPackageReference "RxSwift" */;
+			productName = RxBlocking;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		C8A898F022DAB4BE000AA02D /* APOD.xcdatamodeld */ = {
