@@ -1,0 +1,238 @@
+## Observable
+
+### create
+
+- Observable<Type>.just( aType )
+
+- Observable.of( a, b, … )
+
+- Observable.of( [a, b, ...] )
+
+  Observable of `[ Type ]` 
+
+- Observable.from( [a, b, ...] )
+
+  Observable of  ` Type `  
+
+- Observable<Void>.empty()
+
+- Observable<Any>.never()
+
+- .create
+
+  
+
+### subscribe
+
+- func subscribe(_ on: @escaping (Event<Type>) -> Void) -> Disposable
+
+
+
+## Subjects
+
+### publish subjects
+
+- PublishSubject
+
+  开始为空，不断发布新的值
+
+### behavior subjects
+
+- BehaviorSubject
+
+  开始有一个初始值，重复发布它或最新的值
+
+### replay subjects
+
+- ReplaySubject
+
+  开始有一个指定长度的初始缓存区，将保持这一缓存大小，从最新值倒数这一数量，并发布给新的订阅者
+
+### variables
+
+- Variable
+
+  包裹了 `BehaviorSubject` 维持一个当前状态，发布当前值或初始值给新的订阅者；不可以直接触发 `onError` 或 `onCompleted` 事件
+
+## Filtering Operators
+
+### ignoring operators
+
+- ignoreElements
+
+  忽略所有消息，直到 `completed` 或 `error` 
+
+- elementAt(_:)
+
+  收到指定索引的消息时才会发布，不影响结束或错误
+
+- filter
+
+  自定义条件过滤，返回值为真的通过
+
+### skipping operators
+
+- skip
+
+  连续跳过一定数量的值
+
+- skipWhile
+
+  自定义条件跳过，直到找到第一个返回值为真的值通过，此后值不再执行该条件
+
+- skipUntil
+
+  接受一个Observable对象作为过滤参数，当该序列发出消息后，其它序列的值才被发布
+
+### taking operators
+
+- take
+
+  只发布从首个消息开始的前几个消息
+
+- takeWhile
+
+  自定义条件被接受，从第一个开始，遇到第一个返回值为假的值就停止发布
+
+- takeUntil
+
+  接受一个Observable对象作为过滤参数，当该序列发出消息就停止发布
+
+### distinct operators
+
+- distinctUntilChanged
+
+  和前一个值对比，如果不相同则发布，直到第一次发生两个值相同，则不发布，但并不停止
+
+## Transforming Operators
+
+### transforming elements
+
+- toArray
+- map
+
+### transforming inner observables
+
+- flatMap
+
+  组合一个Observable集合，接受每一个序列的消息，并发布出去
+
+- flatMapLatest
+
+  组合一个Observable集合，但当接受到某个序列的消息后，只发布该序列的消息，之前序列的消息被忽略
+
+### observing events
+
+对于使用 `flatMapLatest` 发布的Observable，如果忽然收到了序列的 `Error` 消息，则序列终止
+
+- materialize
+
+  可以将observable包过程时间的observable，即 `Observable<Event<SomeType>>` 
+
+- dematerialize
+
+  将materialize包裹的对象拆包，即重新得到 `Observable<SomeType>` 
+
+  
+
+## Combining Operators
+
+### prefixing and concatenating
+
+- startWith(_:)
+
+  插入初始化值
+
+- concat(_:)
+
+  拼接多个Observable，可以用Observable的静态方法，也可以用实例方法
+
+- concatMap(_:)
+
+  前一个执行完再顺序执行下一个
+
+- merge()
+
+  将Observable集合合并，不关心顺序，全部结束后，或任意一个抛出错误后结束。
+
+- combineLatest(_: _: _:)
+
+  收到任意一个Observable的值，就使用所有Observable当前的值调用一个闭包（第三个参数）。这是为一个可以组合不同类型的Observable的核心Operator.
+
+- zip(_: _: _:)
+
+  按照索引，将每个Observable中的相同位置的值取出，然后回调。如果某个Observable仍不能提供值，则等待。
+
+### Triggers
+
+- withLatestFrom
+
+  例如 ` button.withLatestFrom(textField) ` , 当 button 触发的时候，才会发出 textField 的值。
+
+- sample
+
+  例如 ``` textField.sample(button) ``` 则当 button 触发的时候，之后此时 textField 中的值发生改变了才会重新发出。
+
+### Switches
+
+- amb
+
+  组合多个Observable，当某个Observable发出消息后，就只会发出该Observable的值，其它被忽略。
+
+- switchLatest
+
+  组合多个Observable（x1…xn）为一个新的Observable（s），最后一次被s选中的x的值，会被s抛出.
+
+### Combining elements within a sequence
+
+- reduce
+
+  等待所有序列结束后，将所有值进行运算，然后发布最终结果。
+
+- scan(_:accumulator:)
+
+  将序列最新的值与之前的计算结果进行计算，发布计算结果。
+
+## Time based operators
+
+### buffering operators
+
+replay, replayAll, multicast, publish 四个都是返回 `ConnectableObservable<E>`  ，需要使用`connect()`启动分发；
+
+- replay 
+
+  向新的观察者分发源序列的倒数n个值；
+
+- replayAll
+
+  同上，只不过是之前的全部值都会被分发
+
+- buffer(timeSpan:count:scheduler:)
+
+  每过`timeSpan` 的时间，就读取这段时间内源序列中的值，最多取`count` 个发布出来
+
+- window(timeSpan:count:scheduler)
+
+  与 `buffer(timeSpan:count:scheduler:)` 的不同是，它发布的不是值的集合，而是缓存项的`Observable` 
+
+### time-shiftingoperators
+
+- delaySubscription(_:scheduler:)
+
+  延迟一定时间后开始发布源序列的值
+
+- Observable.interval(_:scheduler:)
+
+  代替`timer`, 从第一个观察者注册后，在指定延迟时间开始发布消息；可以取消。
+
+- Observable.timer(_:period:scheduler:)
+
+  在上面的API的基础上增加了：可以指定一个注册时刻与首个值发布的间隔；是否重复是可选的。
+
+- timeout(_:scheduler:)
+
+  触发后，发出`RxError.TimeoutError`
+
+- timeout(_:other:scheduler:)
+
+  触发后，切换到`other` observable 而不是发出错误
