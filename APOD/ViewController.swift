@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import Foundation
+import CoreData
 import Combine
 import RxCocoa
 import RxSwift
-
 
 class ViewController: UIViewController {
 
@@ -21,14 +22,13 @@ class ViewController: UIViewController {
     
     var date = Date() {
         didSet {
-            print("date: ", date)
-            
-            
             // load(date: date)
         }
     }
     
     let disposeBag = DisposeBag()
+    
+    let fetcher = APODResultFetcher()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,10 +53,12 @@ class ViewController: UIViewController {
             destination.preferredContentSize = CGSize(width: view.bounds.width - 20, height: 300)
             destination.popoverPresentationController?.delegate = destination
             
+            // Using Assign
             let _ = destination.publishedDate
                 .receive(on: DispatchQueue.main)
                 .assign(to: \.date, on: self)
             
+            // Using Sink
             let sub: Subscribers.Sink<Date, Never> = Subscribers.Sink(receiveCompletion: { [weak self] (completion) in
                 print("Subscribers.Sink completion")
                 
@@ -74,20 +76,8 @@ class ViewController: UIViewController {
     }
 
     private func load(date: Date = Date()) {
-        let format = DateFormatter()
-        format.dateFormat = "yyyy-MM-dd"
-        let dateString = format.string(from: date)
-        
-        let apodResult = APODResult.request(
-            URLPath: APODURL,
-            query: [
-                "date":dateString,
-                "hd":"TRUE",
-                "api_key":APODAPIDemoKey
-            ]
-        )
+        let apodResult = fetcher.request(date: date)
         apodResult
-            .retry(3)
             .subscribe(
                 onNext: { [weak self] (result) in
                     print("APOD result observable result: \(result)")
@@ -95,8 +85,11 @@ class ViewController: UIViewController {
                         self?.updateUI(result: result)
                     }
                 },
-                onError: { (error) in
+                onError: { [weak self] (error) in
                     print("APOD result observable error: \(error.localizedDescription)")
+                    DispatchQueue.main.async {
+                        self?.clearUI()
+                    }
             },
                 onCompleted: {
                     print("APOD result observable completed")
@@ -107,16 +100,22 @@ class ViewController: UIViewController {
             .disposed(by: disposeBag)
     }
     
+    private func clearUI() {
+        titleLabel.text = "No Data"
+        detailLabel.text = nil
+        imageView.image = nil
+    }
+    
     private func updateUI(result: APODResult) {
-        titleLabel.text = "Title: \(result.title)"
-        detailLabel.text = "Detail: \(result.explanation)"
+        titleLabel.text = result.title
+        detailLabel.text = result.explanation
         imageView.image = nil
         
         guard result.isImage else {
             print("Not a image")
             return
         }
-        let observable = APODResult.downloadImage(URLPath: result.bestChoice)
+        let observable = fetcher.downloadImage(URLPath: result.bestChoice)
         observable
             .retry(3)
             .map { UIImage(data: $0) }
