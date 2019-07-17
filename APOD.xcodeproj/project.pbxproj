@@ -26,6 +26,7 @@
 		C8C927A422DC04D7004C976A /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C927A322DC04D7004C976A /* DataController.swift */; };
 		C8C927A622DC09D8004C976A /* APODResultCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C927A522DC09D8004C976A /* APODResultCache.swift */; };
 		C8C927A822DC14D6004C976A /* APODResultFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C927A722DC14D6004C976A /* APODResultFetcher.swift */; };
+		C8C927AA22DD5AAB004C976A /* RxDatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C927A922DD5AAB004C976A /* RxDatePickerViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 		C8C927A322DC04D7004C976A /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		C8C927A522DC09D8004C976A /* APODResultCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APODResultCache.swift; sourceTree = "<group>"; };
 		C8C927A722DC14D6004C976A /* APODResultFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APODResultFetcher.swift; sourceTree = "<group>"; };
+		C8C927A922DD5AAB004C976A /* RxDatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxDatePickerViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,19 +123,20 @@
 		C8A898E622DAB4BE000AA02D /* APOD */ = {
 			isa = PBXGroup;
 			children = (
+				C8A898F022DAB4BE000AA02D /* APOD.xcdatamodeld */,
+				C8C9279F22DAB7AC004C976A /* APODResult.swift */,
+				C8C927A522DC09D8004C976A /* APODResultCache.swift */,
+				C8C927A722DC14D6004C976A /* APODResultFetcher.swift */,
 				C8A898E722DAB4BE000AA02D /* AppDelegate.swift */,
+				C8A898F322DAB4C2000AA02D /* Assets.xcassets */,
+				C8C927A322DC04D7004C976A /* DataController.swift */,
+				C8C927A122DB1D94004C976A /* DatePickerViewController.swift */,
+				C8A898F822DAB4C2000AA02D /* Info.plist */,
+				C8A898F522DAB4C2000AA02D /* LaunchScreen.storyboard */,
+				C8A898ED22DAB4BE000AA02D /* Main.storyboard */,
+				C8C927A922DD5AAB004C976A /* RxDatePickerViewController.swift */,
 				C8A898E922DAB4BE000AA02D /* SceneDelegate.swift */,
 				C8A898EB22DAB4BE000AA02D /* ViewController.swift */,
-				C8C927A122DB1D94004C976A /* DatePickerViewController.swift */,
-				C8C9279F22DAB7AC004C976A /* APODResult.swift */,
-				C8C927A722DC14D6004C976A /* APODResultFetcher.swift */,
-				C8C927A522DC09D8004C976A /* APODResultCache.swift */,
-				C8A898ED22DAB4BE000AA02D /* Main.storyboard */,
-				C8A898F322DAB4C2000AA02D /* Assets.xcassets */,
-				C8A898F522DAB4C2000AA02D /* LaunchScreen.storyboard */,
-				C8A898F822DAB4C2000AA02D /* Info.plist */,
-				C8C927A322DC04D7004C976A /* DataController.swift */,
-				C8A898F022DAB4BE000AA02D /* APOD.xcdatamodeld */,
 			);
 			path = APOD;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 				C8C927A222DB1D94004C976A /* DatePickerViewController.swift in Sources */,
 				C8C927A022DAB7AC004C976A /* APODResult.swift in Sources */,
 				C8A898E822DAB4BE000AA02D /* AppDelegate.swift in Sources */,
+				C8C927AA22DD5AAB004C976A /* RxDatePickerViewController.swift in Sources */,
 				C8A898EA22DAB4BE000AA02D /* SceneDelegate.swift in Sources */,
 				C8C927A622DC09D8004C976A /* APODResultCache.swift in Sources */,
 				C8C927A822DC14D6004C976A /* APODResultFetcher.swift in Sources */,

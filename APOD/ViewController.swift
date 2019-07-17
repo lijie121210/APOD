@@ -8,23 +8,19 @@
 
 import UIKit
 import Foundation
-import CoreData
-import Combine
 import RxCocoa
 import RxSwift
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var visualEffectView: UIVisualEffectView!
+    @IBOutlet weak var actionfContainer: UIView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var detailLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var networkIndicator: UIActivityIndicatorView!
     
-    var date = Date() {
-        didSet {
-            // load(date: date)
-        }
-    }
+    var date = Date()
     
     let disposeBag = DisposeBag()
     
@@ -33,9 +29,14 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        visualEffectView.layer.cornerRadius = 20
-        
         load(date: date)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        actionfContainer.layer.cornerRadius = 20
+        visualEffectView.layer.cornerRadius = 20
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -52,23 +53,12 @@ class ViewController: UIViewController {
             }
             destination.preferredContentSize = CGSize(width: view.bounds.width - 20, height: 300)
             destination.popoverPresentationController?.delegate = destination
-            
-            // Using Assign
-            let _ = destination.publishedDate
-                .receive(on: DispatchQueue.main)
-                .assign(to: \.date, on: self)
-            
-            // Using Sink
-            let sub: Subscribers.Sink<Date, Never> = Subscribers.Sink(receiveCompletion: { [weak self] (completion) in
-                print("Subscribers.Sink completion")
-                
-                if let s = self {
-                    s.load(date: s.date)
-                }
-            }) { (date) in
-                print("Subscribers.Sink date: ", date.description)
+            destination.initDate = date
+            destination.bind { [weak self] (date) in
+                print("destination.completion date: ", date)
+                self?.date = date
+                self?.load(date: date)
             }
-            destination.subscriber = sub
             
         default:
             break
@@ -76,6 +66,9 @@ class ViewController: UIViewController {
     }
 
     private func load(date: Date = Date()) {
+        DispatchQueue.main.async {
+            self.networkIndicator.isHidden = false
+        }
         let apodResult = fetcher.request(date: date)
         apodResult
             .subscribe(
@@ -90,17 +83,14 @@ class ViewController: UIViewController {
                     DispatchQueue.main.async {
                         self?.clearUI()
                     }
-            },
-                onCompleted: {
-                    print("APOD result observable completed")
-            },
-                onDisposed: {
-                    print("APOD result observable disposed")
-            })
+                },
+                onCompleted: { print("APOD result observable completed") },
+                onDisposed: { print("APOD result observable disposed") })
             .disposed(by: disposeBag)
     }
     
     private func clearUI() {
+        networkIndicator.isHidden = true
         titleLabel.text = "No Data"
         detailLabel.text = nil
         imageView.image = nil
@@ -113,23 +103,32 @@ class ViewController: UIViewController {
         
         guard result.isImage else {
             print("Not a image")
+            networkIndicator.isHidden = true
             return
         }
         let observable = fetcher.downloadImage(URLPath: result.bestChoice)
         observable
-            .retry(3)
+            .retry(1)
             .map { UIImage(data: $0) }
             .subscribe(
                 onNext: { [weak self] (image) in
                     DispatchQueue.main.async {
+                        self?.networkIndicator.isHidden = true
                         self?.imageView.image = image
                     }
                 },
-                onError: { print("Image observable error: \($0.localizedDescription)") },
-                onCompleted: { print("Image observable completed") }) {
+                onError: {
+                    print("Image observable error: \($0.localizedDescription)")
+                    DispatchQueue.main.async { [weak self] in
+                        self?.networkIndicator.isHidden = true
+                    }
+                },
+                onCompleted: {
+                    print("Image observable completed")
+                }) {
                     print("Image observable disposed")
-        }
-        .disposed(by: disposeBag)
+                }
+            .disposed(by: disposeBag)
     }
 }
 

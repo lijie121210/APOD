@@ -7,31 +7,52 @@
 //
 
 import UIKit
+import Foundation
 import Combine
 
 class DatePickerViewController: UIViewController, UIPopoverPresentationControllerDelegate {
     
-    @IBOutlet weak var datePicker: UIDatePicker!
+    // MARK: - init
     
-    @Published var date: Date = Date()
+    @Published var initDate: Date = Date()
     
-    var publishedDate: Published<Date>.Publisher { $date }
-    
-    var subscriber: Subscribers.Sink<Date, Never>? {
+    @IBOutlet weak var datePicker: UIDatePicker! {
         didSet {
-            guard let s = subscriber else {
-                return
-            }
-            publishedDate.receive(on: RunLoop.main).subscribe(s)
+            let _ = $initDate
+                .receive(on: RunLoop.main)
+                .assign(to: \.date, on: datePicker)
         }
+    }
+    
+    // MARK: - Update
+    
+    var currentDate = CurrentValueSubject<Date, Error>(Date())
+    
+    func bind(_ updation: @escaping (Date) -> Void) {
+        let _ = currentDate.sink(receiveCompletion: { [weak self] (completion) in
+            switch completion {
+            case .finished:
+                if let date = self?.currentDate.value {
+                    updation(date)
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }) { print("Subscribers.Sink date: ", $0) }
     }
     
     deinit {
         print(self, #function)
+        
+        if #available(iOS 13.0, *) {
+            
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     @IBAction func dateDidChange(_ sender: Any) {
-        date = datePicker.date
+        currentDate.send(datePicker.date)
     }
     
     func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
@@ -39,6 +60,13 @@ class DatePickerViewController: UIViewController, UIPopoverPresentationControlle
     }
     
     func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
-        subscriber?.receive(completion: .finished)
+        let format = DateFormatter()
+        format.dateFormat = "yyyy-MM-dd"
+        
+        if format.string(from: currentDate.value) == format.string(from: initDate) {
+            currentDate.send(completion: .failure(CocoaError(.userCancelled)))
+        } else {
+            currentDate.send(completion: .finished)
+        }
     }
 }
