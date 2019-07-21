@@ -16,7 +16,7 @@ public struct APODResult: Codable {
     public var date: String
     public var explanation: String
     
-    /// like: image
+    /// like: image, video
     public var media_type: String
     public var service_version: String?
     public var copyright: String?
@@ -24,4 +24,20 @@ public struct APODResult: Codable {
     
     public var isImage: Bool { media_type == "image" }
     public var bestChoice: String { hdurl ?? url }
+}
+
+extension APODResult {
+    
+    static var empty: APODResult {
+        return APODResult(
+            title: "No Data",
+            url: "",
+            hdurl: nil,
+            date: "",
+            explanation: "",
+            media_type: "",
+            service_version: nil,
+            copyright: nil
+        )
+    }
 }

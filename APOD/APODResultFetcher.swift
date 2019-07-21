@@ -38,26 +38,25 @@ final public class APODResultFetcher {
     }
     
     public func request(URLPath: String, query: [String:String]) -> Observable<APODResult> {
-        do {
-            guard let url = requestURL(URLPath: URLPath, query: query) else {
-                throw URLError(.badURL)
-            }
-            let request = URLRequest(url: url)
-            let observable = URLSession.shared
-                .rx
-                .response(request: request)
-                .map { try JSONDecoder().decode(APODResult.self, from: $1) }
-            
-            observable.subscribe(onNext: { [weak self] (result) in
-                self?.cacher.write(result: result)
-            }) {
-                print("APODResultCache.write result disposed!")
-            }.disposed(by: disposeBag)
-            
-            return observable
-        } catch {
-            return Observable.empty()
+        guard let url = requestURL(URLPath: URLPath, query: query) else {
+            return Observable.just(APODResult.empty).share(replay: 1, scope: .forever)
         }
+        let request = URLRequest(url: url)
+        let observable = URLSession.shared
+            .rx
+            .response(request: request)
+            .map { try JSONDecoder().decode(APODResult.self, from: $1) }
+            .catchErrorJustReturn(.empty)
+            .share(replay: 1, scope: .forever)
+
+        observable
+            .filter { !$0.date.isEmpty && !$0.url.isEmpty }
+            .subscribe(onNext: { [weak self] (result) in
+                self?.cacher.write(result: result)
+            })
+            .disposed(by: disposeBag)
+        
+        return observable
     }
     
     public func request(date: Date) -> Observable<APODResult> {
@@ -67,7 +66,7 @@ final public class APODResultFetcher {
         
         // look for cache
         if let exist = cacher.read(of: dateString) {
-            return Observable.of(exist)
+            return Observable.of(exist).share(replay: 1, scope: .forever)
         }
         
         // send request
@@ -82,29 +81,29 @@ final public class APODResultFetcher {
     }
     
     public func downloadImage(URLPath: String) -> Observable<Data> {
-        do {
-            // read cache
-            if let exist = cacher.read(imageURL: URLPath) {
-                return Observable.of(exist)
-            }
-            
-            // send request
-            guard let url = URL(string: URLPath) else {
-                throw URLError(.badURL)
-            }
-            let observable = URLSession.shared
-                .rx
-                .data(request: URLRequest(url: url))
-            
-            observable.subscribe(onNext: { [weak self] (data) in
-                self?.cacher.write(imageURL: URLPath, data: data)
-            }) {
-                print("APODResultCache.write image data disposed!")
-            }.disposed(by: disposeBag)
-            
-            return observable
-        } catch {
-            return Observable.empty()
+        // read cache
+        if let exist = cacher.read(imageURL: URLPath) {
+            return Observable.of(exist).share(replay: 1, scope: .forever)
         }
+        
+        // send request
+        guard let url = URL(string: URLPath) else {
+            return Observable.of(Data()).share(replay: 1, scope: .forever)
+        }
+        let observable = URLSession.shared
+            .rx
+            .data(request: URLRequest(url: url))
+            .retry(1)
+            .catchErrorJustReturn(Data())
+            .share(replay: 1, scope: .forever)
+        
+        observable
+            .filter { !$0.isEmpty }
+            .subscribe(onNext: { [weak self] (data) in
+                self?.cacher.write(imageURL: URLPath, data: data)
+            })
+            .disposed(by: disposeBag)
+        
+        return observable
     }
 }

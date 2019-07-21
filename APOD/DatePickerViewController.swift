@@ -10,6 +10,15 @@ import UIKit
 import Foundation
 import Combine
 
+extension Date {
+    
+    func equalTo(_ date: Date, format: String = "yyyy-MM-dd") -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = format
+        return formatter.string(from: self) == formatter.string(from: date)
+    }
+}
+
 class DatePickerViewController: UIViewController, UIPopoverPresentationControllerDelegate {
     
     // MARK: - init
@@ -18,37 +27,34 @@ class DatePickerViewController: UIViewController, UIPopoverPresentationControlle
     
     @IBOutlet weak var datePicker: UIDatePicker! {
         didSet {
+            //datePicker.date = initDate
             let _ = $initDate
                 .receive(on: RunLoop.main)
+                .print()
                 .assign(to: \.date, on: datePicker)
         }
     }
     
     // MARK: - Update
     
-    var currentDate = CurrentValueSubject<Date, Error>(Date())
+    private lazy var currentDate = CurrentValueSubject<Date, Never>(Date())
     
-    func bind(_ updation: @escaping (Date) -> Void) {
-        let _ = currentDate.sink(receiveCompletion: { [weak self] (completion) in
-            switch completion {
-            case .finished:
-                if let date = self?.currentDate.value {
-                    updation(date)
+    lazy var selectedDatePublisher: AnyPublisher<Date, Never> = {
+        return currentDate
+            .subscribe(on: RunLoop.main)
+            .removeDuplicates()
+            .filter { [weak self] (newDate) -> Bool in
+                guard let this = self else {
+                    return false
                 }
-            case .failure(let error):
-                print(error.localizedDescription)
+                return !newDate.equalTo(this.initDate)
             }
-        }) { print("Subscribers.Sink date: ", $0) }
-    }
+            .last()
+            .eraseToAnyPublisher()
+    }()
     
     deinit {
         print(self, #function)
-        
-        if #available(iOS 13.0, *) {
-            
-        } else {
-            // Fallback on earlier versions
-        }
     }
     
     @IBAction func dateDidChange(_ sender: Any) {
@@ -60,13 +66,6 @@ class DatePickerViewController: UIViewController, UIPopoverPresentationControlle
     }
     
     func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
-        let format = DateFormatter()
-        format.dateFormat = "yyyy-MM-dd"
-        
-        if format.string(from: currentDate.value) == format.string(from: initDate) {
-            currentDate.send(completion: .failure(CocoaError(.userCancelled)))
-        } else {
-            currentDate.send(completion: .finished)
-        }
+        currentDate.send(completion: .finished)
     }
 }
